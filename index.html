@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Tab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Courier Prime", monospace;
+      }
+
+      .settings-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 900;
+        transition: opacity 0.2s;
+      }
+
+      .settings-button:hover {
+        opacity: 0.8;
+      }
+
+      .settings-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .settings-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .settings-content {
+        background-color: white;
+        padding: 20px;
+        border: 2px solid black;
+        width: 350px;
+      }
+
+      body {
+        background-color: #ffffff !important;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        height: 80vh;
+        display: grid;
+        grid-template-areas:
+          "main main main"
+          "blue yellow yellow";
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 2fr 1fr;
+        grid-gap: 15px;
+        margin: 0 auto;
+      }
+
+      .box {
+        background-color: white;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .main {
+        grid-area: main;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        background-color: transparent;
+      }
+
+      .red {
+        grid-area: red;
+        background-color: #e74c3c;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .blue {
+        grid-area: blue;
+        background-color: rgba(52, 152, 219, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .clock {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .date {
+        font-size: 14px;
+        margin-bottom: 15px;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .weather {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .weather-info {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+      }
+
+      .weather-temp {
+        font-size: 18px;
+        font-weight: bold;
+        margin-left: 5px;
+      }
+
+      .yellow {
+        grid-area: yellow;
+        background-color: rgba(241, 196, 15, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 10px;
+      }
+
+      .todo-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .todo-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+        color: black;
+      }
+
+      .todo-form {
+        display: flex;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .todo-input {
+        flex-grow: 1;
+        padding: 8px;
+        border: 2px solid black;
+        font-family: "Courier Prime", monospace;
+      }
+
+      .todo-add {
+        padding: 8px 12px;
+        background-color: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      .todo-list {
+        width: 100%;
+        max-height: 100px;
+        overflow-y: auto;
+      }
+
+      .todo-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        padding: 5px;
+        background-color: white;
+        border: 1px solid black;
+      }
+
+      .todo-text {
+        flex-grow: 1;
+        margin-left: 8px;
+      }
+
+      .todo-delete {
+        cursor: pointer;
+        margin-left: 10px;
+        font-weight: bold;
+      }
+
+      .search-container {
+        width: 90%;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .search-bar {
+        display: flex;
+        width: 100%;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 2px solid black;
+        outline: none;
+        background: white;
+      }
+
+      button {
+        padding: 12px 16px;
+        background: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .search-engines {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        width: 100%;
+      }
+
+      .search-engine {
+        margin: 0 10px;
+        cursor: pointer;
+        padding: 5px;
+        font-weight: bold;
+        color: #000;
+        text-shadow: 0px 0px 1px rgba(255, 255, 255, 0.7);
+      }
+
+      .search-engine.active {
+        text-decoration: underline;
+      }
+
+      .title {
+        font-size: 32px;
+        margin-bottom: 30px;
+        font-weight: bold;
+        text-align: center;
+        letter-spacing: 2px;
+        color: #000;
+        text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
+      }
+
+      .shortcuts {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 100%;
+        margin-top: 30px;
+      }
+
+      .shortcut-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border: 2px solid black;
+        width: 300px;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .modal-form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid black;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+      }
+
+      .modal-button {
+        padding: 8px 15px;
+        background-color: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      .cancel-button {
+        background-color: #555;
+      }
+
+      .shortcut {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 70px;
+        width: 70px;
+        background-color: transparent;
+        text-decoration: none;
+        color: black;
+        transition: all 0.2s;
+        position: relative;
+      }
+
+      .shortcut-icon {
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 28px;
+        width: 28px;
+      }
+
+      .shortcut-icon svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .shortcut-name {
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+      .shortcut-delete {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 16px;
+        height: 16px;
+        color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .shortcut:hover .shortcut-delete {
+        opacity: 1;
+      }
+
+      .add-shortcut {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 70px;
+        width: 70px;
+        border: 1px dashed black;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 24px;
+        transition: all 0.2s;
+      }
+
+      .shortcut:hover {
+        opacity: 0.7;
+      }
+
+      .shortcuts-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        text-align: center;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body style=" background-color: #ff0000">
+    <!-- Settings Button -->
+    <div class="settings-button" id="settings-button">
+      <svg class="settings-icon" viewBox="0 0 24 24">
+        <path
+          fill="#000000"
+          d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+        ></path>
+      </svg>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settings-modal">
+      <div class="settings-content">
+        <div class="modal-title">SETTINGS</div>
+        <div class="modal-form">
+          <div class="form-group">
+            <label for="wallpaper-upload">Wallpaper Image:</label>
+            <input
+              type="file"
+              id="wallpaper-upload"
+              accept="image/*"
+              style="margin-top: 10px"
+            />
+          </div>
+          <div
+            style="margin-top: 10px; text-align: center; margin-bottom: 15px"
+          >
+            <div
+              id="wallpaper-preview"
+              style="
+                max-width: 100%;
+                height: 150px;
+                border: 1px solid #ccc;
+                margin-top: 10px;
+                background-size: cover;
+                background-position: center;
+                display: none;
+              "
+            ></div>
+          </div>
+          <div class="modal-buttons">
+            <button class="modal-button cancel-button" id="reset-wallpaper">
+              RESET
+            </button>
+            <button class="modal-button cancel-button" id="cancel-settings">
+              CLOSE
+            </button>
+            <button class="modal-button" id="save-settings">SAVE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="box main">
+        <div class="title" id="search-prompt">
+          ☀️ Happy Sunday! Explore something cool!
+        </div>
+        <div class="search-container">
+          <form
+            id="search-form"
+            action="https://www.google.com/search"
+            method="GET"
+            target="_blank"
+          >
+            <div class="search-bar">
+              <input
+                type="text"
+                id="search-input"
+                name="q"
+                placeholder="Search..."
+                fdprocessedid="glu7hm"
+              />
+              <button type="submit" fdprocessedid="7mliw">GO</button>
+            </div>
+          </form>
+          <div class="search-engines">
+            <div
+              class="search-engine active"
+              data-url="https://www.google.com/search"
+            >
+              Google
+            </div>
+            <div class="search-engine" data-url="https://www.bing.com/search">
+              Bing
+            </div>
+            <div class="search-engine" data-url="https://duckduckgo.com/">
+              DuckDuckGo
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts" id="shortcuts">
+          <a class="shortcut" href="https://www.youtube.com" target="_blank"
+            ><div class="shortcut-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  fill="#FF0000"
+                  d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                ></path>
+              </svg>
+            </div>
+            <div class="shortcut-name">YouTube</div>
+            <div class="shortcut-delete">×</div></a
+          ><a class="shortcut" href="https://www.twitter.com" target="_blank"
+            ><div class="shortcut-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  fill="#000000"
+                  d="M13.319 10.172l8.507-9.893h-2.014l-7.389 8.582-5.908-8.582H0l8.942 12.986L0 24h2.014l7.851-9.123 6.248 9.123H24l-9.371-13.828zm-2.787 3.243l-.911-1.303L2.712 1.873h3.12l5.571 7.972.911 1.303 7.13 10.202h-3.119l-5.793-8.293z"
+                ></path>
+              </svg>
+            </div>
+            <div class="shortcut-name">X</div>
+            <div class="shortcut-delete">×</div></a
+          ><a class="shortcut" href="https://www.github.com" target="_blank"
+            ><div class="shortcut-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  fill="#181717"
+                  d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+                ></path>
+              </svg>
+            </div>
+            <div class="shortcut-name">GitHub</div>
+            <div class="shortcut-delete">×</div></a
+          ><a class="shortcut" href="https://chat.openai.com" target="_blank"
+            ><div class="shortcut-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  fill="#10A37F"
+                  d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.5094-2.6067-1.4997z"
+                ></path>
+              </svg>
+            </div>
+            <div class="shortcut-name">ChatGPT</div>
+            <div class="shortcut-delete">×</div></a
+          >
+          <div class="add-shortcut">+</div>
+        </div>
+
+        <!-- Shortcut Modal -->
+        <div class="shortcut-modal" id="shortcut-modal">
+          <div class="modal-content">
+            <div class="modal-title">ADD NEW SHORTCUT</div>
+            <div class="modal-form">
+              <div class="form-group">
+                <label for="shortcut-name">Name:</label>
+                <input
+                  type="text"
+                  id="shortcut-name"
+                  placeholder="Enter name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="shortcut-url">URL:</label>
+                <input
+                  type="text"
+                  id="shortcut-url"
+                  placeholder="Enter URL (https://)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="shortcut-icon">Icon (SVG code):</label>
+                <textarea
+                  id="shortcut-icon"
+                  placeholder="Enter SVG code"
+                  rows="4"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid black;
+                    font-family: monospace;
+                    font-size: 12px;
+                  "
+                ></textarea>
+              </div>
+              <div class="modal-buttons">
+                <button class="modal-button cancel-button" id="cancel-shortcut">
+                  CANCEL
+                </button>
+                <button class="modal-button" id="save-shortcut">SAVE</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box blue">
+        <div class="clock" id="clock">7:27:21 PM</div>
+        <div class="date" id="date">Sun, Jun 1, 2025</div>
+        <div class="weather">
+          <div>WEATHER</div>
+          <div class="weather-info">
+            <span>☀️</span>
+            <span class="weather-temp">24°C</span>
+          </div>
+        </div>
+      </div>
+      <div class="box yellow">
+        <div class="todo-container">
+          <div class="todo-title">TO DO LIST</div>
+          <div class="todo-form">
+            <input
+              type="text"
+              class="todo-input"
+              id="todo-input"
+              placeholder="Add a task..."
+              fdprocessedid="jrphis"
+            />
+            <button class="todo-add" id="todo-add" fdprocessedid="g45pdd">
+              ADD
+            </button>
+          </div>
+          <div class="todo-list" id="todo-list">
+            <div class="todo-item">
+              <input type="checkbox" /><span
+                class="todo-text"
+                style="text-decoration: line-through"
+                >do it</span
+              ><span class="todo-delete">X</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/script.js"></script>
+ 
+   
+  </body>
+</html>
